@@ -1,5 +1,7 @@
 # run_analysis.R
+setwd("~/Projects/GettingAndCleaningData/")
 
+# the raw data is stored in a "data" subdir of the working directory
 # get the training and test feature data and combine (append test to training) 
 train_data = read.table("data/UCI HAR Dataset/train/X_train.txt")
 test_data = read.table("data/UCI HAR Dataset/test/X_test.txt")
@@ -42,4 +44,14 @@ names(all_subjects) <- c("subject_id")
 
 # add the subject ids to the feature data
 all_mean_std_data$subject_id <- all_subjects$subject_id
+
+# group the feature data by activity and subject_id
+activity_subject <- group_by(all_mean_std_data, activity, subject_id)
+
+# summarize all the grouped measurements using the mean function
+mean_of_grouped_measurements <- summarise_each(activity_subject, funs(mean))
+
+# write out the summarized tidy data set
+write.table(mean_of_grouped_measurements, file="mean_of_grouped_measurements.txt", row.name=FALSE)
+
 
